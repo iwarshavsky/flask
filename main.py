@@ -1,7 +1,8 @@
-from flask import Flask, render_template_string
+from flask import Flask, redirect
 import os
 
 app = Flask(__name__)
+
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def redirect_all(path):
