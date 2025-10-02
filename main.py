@@ -17,12 +17,24 @@ def log_full_request():
 
 @app.route('/<path:url_path>')
 def smart_redirect(url_path):
+    user_agent = request.headers.get("User-Agent", "").lower()
     
     # Reconstruct full destination URL, default to https
-    destination = f"https://{url_path}"
-    if request.query_string:
-        destination += '?' + request.query_string.decode()
+    destination = "https://www.google.com/"
+    if "whatsapp" in user_agent:
+        destination = f"https://{url_path}"
+        if request.query_string:
+            destination += '?' + request.query_string.decode()
     return redirect(destination)
 
 if __name__ == '__main__':
     app.run(debug=True, port=os.getenv("PORT", default=5000))
+
+
+@app.route('/')
+def index():
+    user_agent = request.headers.get("User-Agent", "").lower()
+    if "whatsapp" in user_agent:
+        return jsonify({"message": "Hello WhatsApp user! Doing something special."})
+    else:
+        return jsonify({"message": "Hello regular user!"})
