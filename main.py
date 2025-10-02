@@ -9,8 +9,11 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
 @app.before_request
-def log_request():
-    app.logger.info(f"Request: {request.method} {request.url}")
+def log_full_request():
+    headers = "\n".join(f"{k}: {v}" for k, v in request.headers.items())
+    app.logger.info(
+        f"Request: {request.method} {request.url}\nHeaders:\n{headers}"
+    )
 
 @app.route('/<path:url_path>')
 def smart_redirect(url_path):
