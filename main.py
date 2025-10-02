@@ -1,16 +1,15 @@
-from flask import Flask, redirect, request, abort
+from flask import Flask, redirect, request
 import os
-import urllib.parse
 
 app = Flask(__name__)
 
-@app.route('/', methods=['GET'])
-def forward_to_next():
-    next_url = request.args.get('next')
-    # Optional: Validate the URL (basic check)
-    if not next_url or not urllib.parse.urlparse(next_url).scheme:
-        abort(400, description="Missing or invalid 'next' parameter")
-    return redirect(next_url)
+@app.route('/<path:url_path>')
+def smart_redirect(url_path):
+    # Reconstruct full destination URL, default to https
+    destination = f"https://{url_path}"
+    if request.query_string:
+        destination += '?' + request.query_string.decode()
+    return redirect(destination)
 
 if __name__ == '__main__':
     app.run(debug=True, port=os.getenv("PORT", default=5000))
